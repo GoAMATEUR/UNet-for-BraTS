@@ -1,0 +1,2 @@
+x_img.npy (240, 240, 3) nomalized ndarray
+x_seg.npy (240, 240) 0-1 label
