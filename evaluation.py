@@ -10,13 +10,13 @@ from torchvision.transforms import ToPILImage
 from torchvision.utils import save_image
 from matplotlib import pyplot as plt
 import os
-from UNet import UNet
-from BraTSDataLoader import BraTSDataset
+from unet import UNet
+from dataloader import BraTSDataset
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-model_path = "./out_models/train_BCE_51.pth"
+model_path = "./out_models/train_BCE_141.pth"
 data_root = "./Val/Yes"
-save_root = "./output/BCE_51/"
+save_root = "./output/BCE_141/"
 
 if not os.path.exists(model_path):
     raise("Model not fond")
@@ -62,3 +62,4 @@ for i, (img, label) in enumerate(dataloader):
     plt.title('output')  
     plt.xticks([]),plt.yticks([])  
     plt.savefig(os.path.join(save_root, f"{i}.jpg"))
+    plt.close()
