@@ -8,6 +8,7 @@ import torch
 from torch import nn, optim
 from torchvision.transforms import ToPILImage
 from torch.utils.data import DataLoader
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.tensorboard import SummaryWriter
 from UNet import *
 from BraTSDataLoader import BraTSDataset
@@ -47,6 +48,7 @@ if use_exist_model:
 
 print("\nStart training ...")
 opt = optim.Adam(net.parameters(), lr=learning_rate)
+scheduler = ReduceLROnPlateau(opt, mode="min", patience=4, verbose=True)
 loss_f = nn.BCELoss()
 epoch = 1
 while True:
