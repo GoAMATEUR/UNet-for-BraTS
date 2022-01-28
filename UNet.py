@@ -1,9 +1,76 @@
 """
-    By:     Huang Siyuan
+    By:     hsy
     Date:   2022/1/27
 """
-from Blocks import *
-import torch.nn as nn
+import torch
+from torch import nn
+from torch.nn import functional as F
+from collections import OrderedDict
+
+dropout_rate = 0.2
+
+class ConvBlock(nn.Module):
+    """ 
+    Convolution Block
+
+    Args:
+        in_channels (int): number of input channels
+        out_channels (int): number of output channels
+    """
+    def __init__(self, in_channels, out_channels) -> None:
+        super(ConvBlock, self).__init__()
+        self.layers = nn.Sequential(
+            
+            nn.Conv2d(in_channels, out_channels, 3, 1, 1, padding_mode="reflect", bias=False),
+            nn.BatchNorm2d(out_channels),
+            nn.Dropout2d(dropout_rate),
+            nn.LeakyReLU(),
+            
+            nn.Conv2d(out_channels, out_channels, 3, 1, 1, padding_mode="reflect", bias=False),
+            nn.BatchNorm2d(out_channels),
+            nn.Dropout2d(dropout_rate),
+            nn.LeakyReLU()
+        )
+        
+    def forward(self, input):
+        return self.layers(input)
+    
+class DownSampling(nn.Module):
+    """
+    Down Sampling
+        implement 3*3 Conv instead of 2*2 max pooling. 
+    
+    Args:
+        channels (int): number of input/output channels
+    """
+    def __init__(self, channel):
+        super(DownSampling, self).__init__()
+        self.layers = nn.Sequential(
+            nn.Conv2d(channel, channel, 3, 2, 1, padding_mode= "reflect", bias=False),
+            nn.BatchNorm2d(channel),
+            nn.LeakyReLU()
+        )
+        
+    def forward(self, input):
+        return self.layers(input)
+    
+class UpSamling(nn.Module):
+    """
+    Interpolation
+    
+    Args:
+        channels (int): number of input/output channels
+    """
+    def __init__(self, channels) -> None:
+        super(UpSamling, self).__init__()
+        self.layers = nn.Sequential(
+            nn.Conv2d(channels, channels//2, 1, 1)
+        ) # Feature intrgration
+        
+    def forward(self, input, feature_map):
+        interpolated = F.interpolate(input, scale_factor=2, mode='nearest')
+        out = self.layers(interpolated)
+        return torch.cat((out, feature_map), dim = 1)
 
 class UNet(nn.Module):
     def __init__(self):
@@ -30,7 +97,7 @@ class UNet(nn.Module):
         self.uConv4 = ConvBlock(128, 64)
         
         # out
-        self.outConv = nn.Conv2d(64, 3, 3, 1, 1)
+        self.outConv = nn.Conv2d(64, 1, 3, 1, 1)
         self.sigmoid = nn.Sigmoid()
         
     def forward(self, input):
@@ -48,8 +115,10 @@ class UNet(nn.Module):
         up4 = self.uConv4(self.uSamp4(up3, feature1))
         
         return self.sigmoid(self.outConv(up4))
-    
+
+
 if __name__ == "__main__":
     x = torch.randn(2, 3, 240, 240)
     net = UNet()
-    print(net(x).shape)
+    output = net(x)
+    print(output.shape)

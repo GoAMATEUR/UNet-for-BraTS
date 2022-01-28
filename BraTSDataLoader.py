@@ -1,3 +1,7 @@
+"""
+    By:     hsy
+    Date:   2022/1/27
+"""
 import os
 import numpy as np
 from torch.utils.data import Dataset
@@ -20,8 +24,13 @@ class BraTSDataset(Dataset):
         file_path = os.path.join(self.data_root, self.images[index])
         label_path = os.path.join(self.data_root, self.images[index].replace("img", "seg"))
         img = np.load(file_path)
-        label = np.load(label_path)
+        label = np.load(label_path).astype(np.float32)
         return transform(img), transform(label) # (3, 240, 240) tensor, (240, 240) tensor
+    
+    def size(self):
+        W, H, C = np.load(os.path.join(self.data_root, self.images[0])).shape
+        return W, H
+        
 
 if __name__ == "__main__":
     path = "./dataset"
