@@ -10,7 +10,7 @@ from torchvision.transforms import ToPILImage
 from torchvision.utils import save_image
 from matplotlib import pyplot as plt
 import os
-from unet import UNet
+from net.unet import UNet
 from dataloader import BraTSDataset
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -36,11 +36,12 @@ for i, (img, label) in enumerate(dataloader):
     
     
     output = net(img)
-    # a = img[0,0,:,:].detach().cpu().numpy()
-    # plt.imshow(a, cmap='gray')
-
-    plt.figure(figsize=(8,2.5))
+    # TODO: Evaluate loss
     
+    
+    # plot Result
+    # 3-layers of input, label, output
+    plt.figure(figsize=(8,2.5))
     plt.subplot(1,5,1)
     plt.imshow(img[0,0,:,:].detach().cpu().numpy(), cmap='gray')
     plt.title('layer1')  
