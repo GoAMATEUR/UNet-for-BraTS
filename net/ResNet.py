@@ -2,8 +2,6 @@
     By:     Hsy
     Date:   2022/1/29
 """
-from turtle import forward
-from numpy import identity
 import torch
 import torch.nn as nn
 
