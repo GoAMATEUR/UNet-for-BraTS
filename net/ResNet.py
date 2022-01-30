@@ -19,7 +19,7 @@ class ConvBlock(nn.Module):
         in_channel: input channel
         mid_channel: mid way channel out_channel = 4 * mid_channel
     """
-    scale = 4
+    
     def __init__(self, in_channel, mid_channel, stride = 1, dSampScheme=None):
         super(ConvBlock, self).__init__()
         self.convs = nn.Sequential(
@@ -29,8 +29,8 @@ class ConvBlock(nn.Module):
             nn.Conv2d(mid_channel, mid_channel, 3, stride, padding=1, bias=False), # Conv3x3 shrink
             nn.BatchNorm2d(mid_channel),
             nn.ReLU(inplace=False),
-            nn.Conv2d(mid_channel, mid_channel*self.scale, 1, 1, bias=False),
-            nn.BatchNorm2d(mid_channel * self.scale),
+            nn.Conv2d(mid_channel, mid_channel * 4, 1, 1, bias=False),
+            nn.BatchNorm2d(mid_channel * 4),
             nn.ReLU(inplace=False)
         )
         self.stride = stride
@@ -54,13 +54,13 @@ class ResNet(nn.Module):
     Args:
         block_num_list: Number of Conv Blocks in each layer. [3, 4, 6, 3] for ResNet50
     """
-    def __init__(self, block_num_list, class_num=1000):
+    def __init__(self, block_num_list=[3, 4, 6, 3]):
         super(ResNet, self).__init__()
-        # in: (3, 240, 240) out: (64, 120, 120)
+        # in: (3, 240, 240) out: (64, 240, 240)
         self.block_num_list = block_num_list
         
         self.conv1 = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3,bias=False),
+            nn.Conv2d(3, 64, kernel_size=7, stride=1, padding=3,bias=False),
             nn.BatchNorm2d(64),
             nn.ReLU()
         )
@@ -75,13 +75,14 @@ class ResNet(nn.Module):
         # in: (1024, 15, 15) out: (2048, 8, 8)
         self.conv5_x = self.makeLayer(1024, 512, block_num_list[0], 2)
         
-        self.avgpool = nn.AvgPool2d(8)
-        self.fc = nn.Linear(512 * 4, class_num)
+        # NO FCN STRUCTURE
+        # self.avgpool = nn.AvgPool2d(8)
+        # self.fc = nn.Linear(512 * 4, class_num)
         
     
     def makeLayer(self, prev_channel, mid_channel, block_num, stride=1):
         dSampScheme = None
-        outChannel = 4*mid_channel
+        outChannel = 4 * mid_channel
         blockList = []
         # stride == 1: conv2_x from max pooling(64), match prev_channel != mid_channel * 4
         # stride == 2: following layers.
@@ -100,20 +101,32 @@ class ResNet(nn.Module):
         return nn.Sequential(*blockList)
     
     def forward(self, input):
-        feature1 = self.conv1(input)
-        feature2 = self.conv2_x(self.maxpool(feature1))
-        feature3 = self.conv3_x(feature2)
-        feature4 = self.conv4_x(feature3)
-        feature5 = self.conv5_x(feature4)
-        out = self.avgpool(feature5)
-        out = torch.flatten(out, 1)
-        out =  self.fc(out)
-        return [feature1, feature2, feature3, feature4, feature5, out]
+        """
+        torch.Size([2, 64, 240, 240])
+        torch.Size([2, 256, 120, 120])
+        torch.Size([2, 512, 60, 60])
+        torch.Size([2, 1024, 30, 30])
+        torch.Size([2, 2048, 15, 15])
+        """
+        f1 = self.conv1(input)
+        f2 = self.conv2_x(self.maxpool(f1))
+        f3 = self.conv3_x(f2)
+        f4 = self.conv4_x(f3)
+        f5 = self.conv5_x(f4)
+        # out = self.avgpool(f5)
+        # out = torch.flatten(out, 1)
+        # out =  self.fc(out)
+        return f1, f2, f3, f4, f5
     
 if __name__ == "__main__":
     x = torch.randn(2, 3, 240, 240)
-    model = ResNet([3, 4, 6, 3])
-    print(model(x)[5].shape)
+    net = ResNet()
+    f1, f2, f3, f4, f5 = net(x)
+    print(f1.shape)
+    print(f2.shape)
+    print(f3.shape)
+    print(f4.shape)
+    print(f5.shape)
         
         
         

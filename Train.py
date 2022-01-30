@@ -1,6 +1,6 @@
 """
-    By:     hsy
-    Date:   2022/1/28
+    By:     Hsy
+    Date:   2022/1/29
 """
 import os
 import numpy as np
@@ -49,7 +49,9 @@ if use_exist_model:
 print("\nStart training ...")
 opt = optim.Adam(net.parameters(), lr=learning_rate)
 scheduler = ReduceLROnPlateau(opt, mode="min", patience=4, verbose=True)
+
 loss_f = nn.BCELoss()
+
 epoch = 1
 while True:
     loss_sum = 0

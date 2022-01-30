@@ -4,7 +4,7 @@
 """
 import torch
 import torch.nn as nn
-from vgg import VGG
+
 
 class ConvBlock(nn.Module):
     def __init__(self, in_channel, out_channel, conv_num):
@@ -57,11 +57,14 @@ class VGG(nn.Module):
     
     def forward(self, input):
         """
-        f1 torch.Size([2, 64, 240, 240])
-        f2 torch.Size([2, 128, 120, 120])
-        f3 torch.Size([2, 256, 60, 60])
-        f4 torch.Size([2, 512, 30, 30])
-        f5 torch.Size([2, 1024, 15, 15])
+        5 features obtained in each layer.
+        
+        Return:
+            f1 torch.Size([2, 64, 240, 240])
+            f2 torch.Size([2, 128, 120, 120])
+            f3 torch.Size([2, 256, 60, 60])
+            f4 torch.Size([2, 512, 30, 30])
+            f5 torch.Size([2, 1024, 15, 15])
         """
         f1 = self.conv1(input)
         f2 = self.conv2(f1)

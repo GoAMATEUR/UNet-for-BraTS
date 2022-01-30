@@ -10,7 +10,7 @@ from torchvision.transforms import ToPILImage
 from torchvision.utils import save_image
 from matplotlib import pyplot as plt
 import os
-from net.unet import UNet
+from net.unet_original import UNet
 from dataloader import BraTSDataset
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
