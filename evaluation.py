@@ -11,7 +11,7 @@ from torchvision.utils import save_image
 from matplotlib import pyplot as plt
 import os
 from net.unet_original import UNet
-from dataloader import BraTSDataset
+from utils.dataloader import BraTSDataset
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 model_path = "./out_models/train_BCE_141.pth"

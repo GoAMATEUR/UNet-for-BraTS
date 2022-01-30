@@ -12,7 +12,7 @@ from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.tensorboard import SummaryWriter
 from net.unet import UNet
-from dataloader import BraTSDataset
+from utils.dataloader import BraTSDataset
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # parse args
