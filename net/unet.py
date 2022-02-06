@@ -5,8 +5,9 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from vgg import VGG
-from resnet import ResNet
+from net.vgg import VGG
+from net.resnet import ResNet
+
 
 class UpSampBlock(nn.Module):
     def __init__(self, in_channel, out_channel, dropout_rate=0.2):
@@ -43,9 +44,15 @@ class UNet(nn.Module):
     Args:
         nn ([type]): [description]
     """
-    def __init__(self, backbone_type: str, d_rate = 0.3):
+    def __init__(self, backbone_type: str, is_train: bool = True, drop_rate: float = 0.3):
         super(UNet, self).__init__()
         # backbone: VGG16/ResNet50
+        if is_train:
+            self.dropRate = drop_rate
+            self.is_onehot = False
+        else:
+            self.is_onehot = True
+            self.dropRate = 0      
         if backbone_type == "VGG16":
             self.backbone = VGG()
             self.downList = [64, 128, 256, 512, 1024]
@@ -56,7 +63,7 @@ class UNet(nn.Module):
             raise("Invalid type")
         
         # Up Sampling Blocks
-        self.dropRate = d_rate
+        
         
         self.upSamp1 = UpSampBlock(self.downList[-1], self.downList[-2], self.dropRate)
         self.upSamp2 = UpSampBlock(self.downList[-2], self.downList[-3], self.dropRate)
@@ -68,17 +75,22 @@ class UNet(nn.Module):
             nn.Conv2d(self.downList[0], 1, 3, 1, padding=1),
             nn.Sigmoid()
         )
+          
         
     def forward(self, input):
-        
+
         f1, f2, f3, f4, f5 = self.backbone(input)
         
         out = self.upSamp1(f5, f4)
         out = self.upSamp2(out, f3)
         out = self.upSamp3(out, f2)
         out = self.upSamp4(out, f1)
+        out = self.outBlock(out)
+        if self.is_onehot:
+            out = out > 0.5
+            out = out.float()
         
-        return self.outBlock(out)
+        return out
     
 if __name__ == "__main__":
     samp = torch.randn(2, 3, 240, 240)

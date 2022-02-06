@@ -27,9 +27,9 @@ class BraTSDataset(Dataset):
         label = np.load(label_path).astype(np.float32)
         return transform(img), transform(label) # (3, 240, 240) tensor, (240, 240) tensor
     
-    def size(self):
-        W, H, C = np.load(os.path.join(self.data_root, self.images[0])).shape
-        return W, H
+    def get_img_size(self):
+        H, W, C = np.load(os.path.join(self.data_root, self.images[0])).shape
+        return H, W
         
 
 if __name__ == "__main__":
