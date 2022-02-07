@@ -21,9 +21,9 @@ parser.add_argument("--tag",            type=str,   help="Tag of this training s
 parser.add_argument("--backbone",       type=str,   help="type of backbone net, VGG16 or ResNet50",     default="VGG16")
 parser.add_argument("--batch_size",     type=int,   help="batch size",                                  default=8)
 parser.add_argument("--summary_writer", type=int,   help="use summary writer as log",                   default=0)
-parser.add_argument("--data_root",      type=str,   help="root of train set",                           default=".\\dataset")
-parser.add_argument("--model_root",     type=str,   help="root of train set",                           default=".\\out_models")
-parser.add_argument("--log_root",       type=str,   help="root of train set",                           default=".\\logs")
+parser.add_argument("--data_root",      type=str,   help="root of train set",                           default="./dataset")
+parser.add_argument("--model_root",     type=str,   help="root of train set",                           default="./out_models")
+parser.add_argument("--log_root",       type=str,   help="root of train set",                           default="./logs")
 parser.add_argument("--model_path",     type=str,   help="(Optional) Path of pretrained model",         default=None)
 parser.add_argument("--lr",             type=float, help="initial learning rate",                       default=1e-3)
 args = parser.parse_args()
@@ -52,9 +52,9 @@ H, W = dataset.get_img_size()
 net = UNet(net_type, is_train=True).to(device) # to GPU
 
 # print info
-print(f"Traning Session {train_tag} \nBrief:\nBackbone_type:{net_type} | batch_size:{batch_size} | lr:{learning_rate} | model_root:{model_root} | Log root:{log_root}")
-print(f"img_size:{W}*{H} | trainset size:{len(dataset)}")
-print(f"Is GPU available: {torch.cuda.is_available()}")
+print("Traning Session {} \nBrief:\nBackbone_type:{} | batch_size:{} | lr:{} | model_root:{} | Log root:{}".format(train_tag, net_type, batch_size, learning_rate, model_root, log_root))
+print("img_size:{}*{} | trainset size:{}".format(W, H, len(dataset)))
+print("Is GPU available: {}".format(torch.cuda.is_available()))
 
 # if using existing weights
 if model_path is not None:

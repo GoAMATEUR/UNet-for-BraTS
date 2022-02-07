@@ -26,7 +26,7 @@ if not os.path.exists(save_root):
 
 net = UNet().to(device)
 net.load_state_dict(torch.load(model_path))
-print(f"{model_path} loaded")
+print("{} loaded".format(model_path))
 
 dataloader = DataLoader(BraTSDataset(data_root), batch_size=1, shuffle=False)
 converter = ToPILImage()
@@ -62,5 +62,5 @@ for i, (img, label) in enumerate(dataloader):
     plt.imshow(output[0,0,:,:].detach().cpu().numpy(), cmap='gray')
     plt.title('output')  
     plt.xticks([]),plt.yticks([])  
-    plt.savefig(os.path.join(save_root, f"{i}.jpg"))
+    plt.savefig(os.path.join(save_root, "{}.jpg".format(i)))
     plt.close()

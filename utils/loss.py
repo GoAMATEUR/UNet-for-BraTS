@@ -39,9 +39,9 @@ class MetricsTracker(object):
     def save_logs(self):
         dict = {"tag":self.tag, "epoch": self.epoch, "eval":{"iou":self.epoch_IoUs, "acc": self.epoch_Accs, "dice":self.epoch_Dices}}
         item = json.dumps(dict)
-        with open(os.path.join(self.log_root, f"{self.tag}_{self.epoch}_eval.json"), "w", encoding="utf-8") as f:
+        with open(os.path.join(self.log_root, "{}_{}_eval.json".format(self.tag, self.epoch)), "w", encoding="utf-8") as f:
             f.write(item)
-        print(f"Eval log {self.tag}_{self.epoch}_eval.json written")
+        print("Eval log {}_{}_eval.json written".format(self.tag, self.epoch))
         
     def set_epoch(self, epoch):
         self.epoch = epoch
@@ -152,7 +152,7 @@ class BinaryDiceLoss(nn.Module):
 #         return loss
     
 if __name__ == "__main__":
-    with open(".\\logs\\dice_test\\dice_test_1_eval.json", "w", encoding="utf-8") as f:
+    with open("./logs/dice_test/dice_test_1_eval.json", "w", encoding="utf-8") as f:
         f.write("test")
     # loss_dice = BinaryDiceLoss()
     # target = torch.tensor([[[[1., 1.],
