@@ -25,6 +25,7 @@ class BraTSDataset(Dataset):
         label_path = os.path.join(self.data_root, self.images[index].replace("img", "seg"))
         img = np.load(file_path)
         label = np.load(label_path).astype(np.float32)
+
         return transform(img), transform(label) # (3, 240, 240) tensor, (240, 240) tensor
     
     def get_img_size(self):
@@ -33,8 +34,6 @@ class BraTSDataset(Dataset):
         
 
 if __name__ == "__main__":
-    path = "./dataset"
-    files = os.listdir(path)
-    print(files[::2][1145])
-    print(files[1::2][1145])
+    a = np.array([1,2])
+    print(a.dtype)
 

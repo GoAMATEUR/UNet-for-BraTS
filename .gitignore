@@ -18,3 +18,8 @@ output
 
 test.py
 
+out
+
+dataset
+
+*.zip

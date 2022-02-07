@@ -108,15 +108,15 @@ while True:
         # cpu_img = img.detach().cpu()
         # cpu_out = out_image.detach().cpu()
         
-        # if i % 100 == 0:
-        #     print("--Epoch: {}, iter: {}, iter_loss: {}".format(epoch, i, iter_loss.item()))
+        if i % 10 == 0:
+            print("--Epoch: {}, iter: {}, iter_loss: {}".format(epoch, i, iter_loss.item()))
         
         with torch.no_grad():
             loss_sum += iter_loss.item()
             iter_count += 1
             if iter_loss.item() < min_loss:
                 min_loss = iter_loss.item()
-            metrics.update(out_image, label, iter_dice_loss.item())
+            metrics.update(one_hot, label, iter_dice_loss.item())
             # update metrics
     val_loss = loss_sum / iter_count
     acc, iou, dice = metrics.get_metrics()
